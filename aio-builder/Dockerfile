@@ -29,26 +29,3 @@ RUN set -ex \
 	&& update-alternatives --install /usr/bin/javac javac $JAVA_HOME/bin/javac 20000 \
 	&& update-alternatives --install /usr/bin/jar jar $JAVA_HOME/bin/jar 20000
 
-RUN \
-  set -ex && \
-  mkdir -p /app/src && cd /app/src && \
-  git clone https://github.com/axelor/axelor-development-kit.git && \
-  cd axelor-development-kit && \
-  ./gradlew --no-daemon -x test build
-
-RUN \
-  set -ex && \
-  cd /app/src && \
-  git clone https://github.com/axelor/abs-webapp.git axelor-erp && \
-  sed -e 's|git@github.com:|https://github.com/|' -i axelor-erp/.gitmodules && \
-  cd axelor-erp && \
-  git checkout master && \
-  git submodule sync && \
-  git submodule init && \
-  git submodule update && \
-  git submodule foreach git checkout master && \
-  git submodule foreach git pull origin master && \
-  sed -e 's|^application.theme.*|application.theme = modern|g' -i src/main/resources/application.properties && \
-  ./gradlew --no-daemon -x test npm-build build && \
-  rm -rf /app
-
